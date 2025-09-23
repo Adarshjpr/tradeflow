@@ -8,7 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import Centric.Database.project.Dto.UserDto;
+import Centric.Database.project.Dto.patchUserDto;
 import Centric.Database.project.exception.custom.emailNotExsit;
+import Centric.Database.project.exception.custom.findByIdexception;
 import Centric.Database.project.exception.custom.studentExist;
 import Centric.Database.project.model.User;
 import Centric.Database.project.repository.UserRepositoy;
@@ -16,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService  {
 
     private final UserRepositoy userRepositoy;
 
@@ -65,6 +67,46 @@ return  ResponseEntity.ok(dtoValue);
 
     return ResponseEntity.ok(dto);
 }
+
+
+
+ public ResponseEntity<?> logout(Long id) {
+     User user = userRepositoy.findById(id)
+            .orElseThrow(() -> new findByIdexception(id));
+
+           if (user.getId() != null) {
+              userRepositoy.deleteById(id);
+           }
+
+             return ResponseEntity.ok().body( "  thanks of visiting"); 
+
+ }
+
+
+
+ public ResponseEntity<UserDto> patchUser(patchUserDto pUserDto , Long id) {
+
+User userM = userRepositoy.findById(id)
+            .orElseThrow(() -> new findByIdexception(id));
+
+            //  if (userM.getId() !=null) {
+            //      userM.setId(userDto.getId());
+            //  }
+             if (pUserDto.getName() != null) {
+                 userM.setName(pUserDto.getName());
+             }
+             if (pUserDto.getEmail() !=null) {
+                userM.setEmail(pUserDto.getEmail());
+             }
+
+             userRepositoy.save(userM);
+       UserDto uDto = new UserDto(userM.getId(), userM.getName(), userM.getEmail());
+
+             return  ResponseEntity.ok(uDto) ;
+
+ 
+
+ }
 
 
 

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 
 import Centric.Database.project.exception.custom.emailNotExsit;
+import Centric.Database.project.exception.custom.findByIdexception;
 import Centric.Database.project.exception.custom.studentExist;
 
 @ControllerAdvice
@@ -47,6 +49,30 @@ public ResponseEntity<Map<String, Object>> handleMethodNotSupported(HttpRequestM
     messMap.put("timestamp", LocalDateTime.now());
 
     return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(messMap);
+}
+
+@ExceptionHandler(DataIntegrityViolationException.class)
+public ResponseEntity<Map<String, Object>> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+
+    Map<String, Object> messMap = new HashMap<>();
+    messMap.put("error", ex.getMessage());
+    messMap.put("status", HttpStatus.METHOD_NOT_ALLOWED.value());
+    messMap.put("timestamp", LocalDateTime.now());
+
+    return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(messMap);
+}
+
+
+
+@ExceptionHandler(findByIdexception.class)
+public ResponseEntity<Map<String, Object>> handleMethodNotSupported(findByIdexception ex) {
+
+    Map<String, Object> messMap = new HashMap<>();
+    messMap.put("error", ex.getMessage());
+    messMap.put("status", HttpStatus.NOT_FOUND.value());
+    messMap.put("timestamp", LocalDateTime.now());
+
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messMap);
 }
 
 }
